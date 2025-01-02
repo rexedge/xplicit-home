@@ -1,38 +1,33 @@
 "use client";
-
-import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { User } from "next-auth";
 import { UserNav } from "./user-nav";
+import { customerNavItem } from "@/data/consts";
 
-const navItems = [
-  { name: "Home", href: "/" },
-  { name: "Services", href: "/services" },
-  { name: "About", href: "/about" },
-  { name: "Contact", href: "/contact" },
-];
+const navItems = customerNavItem;
 
-export default function Navbar({ user }: { user?: User }) {
+export default function CustomerNavbar({ user }: { user?: User }) {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
 
   return (
-    <nav className="bg-black text-white">
+    <header className="bg-black text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
+            <Link href="/customer" className="flex-shrink-0">
               <motion.span
                 className="text-2xl font-bold"
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                Xplicit Home
+                Home
               </motion.span>
             </Link>
           </div>
@@ -59,18 +54,7 @@ export default function Navbar({ user }: { user?: User }) {
               ))}
             </div>
           </div>
-          <div className="flex gap-2">
-            <div className="hidden md:block">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Button asChild variant="secondary">
-                  <Link href="/booking">Book Now</Link>
-                </Button>
-              </motion.div>
-            </div>
+          <div className="flex gap-1 items-center">
             {user ? (
               <UserNav user={user} />
             ) : (
@@ -84,21 +68,21 @@ export default function Navbar({ user }: { user?: User }) {
                 </Button>
               </motion.div>
             )}
-          </div>
-          <div className="md:hidden">
-            <motion.button
-              onClick={() => setIsOpen(!isOpen)}
-              className="inline-flex items-center justify-center p-2 rounded-md text-purple-400 hover:text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-purple-800 focus:ring-white"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <span className="sr-only">Open main menu</span>
-              {isOpen ? (
-                <X className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Menu className="block h-6 w-6" aria-hidden="true" />
-              )}
-            </motion.button>
+            <div className="md:hidden">
+              <motion.button
+                onClick={() => setIsOpen(!isOpen)}
+                className="inline-flex items-center justify-center p-2 rounded-md text-purple-400 hover:text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-purple-800 focus:ring-white"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <span className="sr-only">Open main menu</span>
+                {isOpen ? (
+                  <X className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Menu className="block h-6 w-6" aria-hidden="true" />
+                )}
+              </motion.button>
+            </div>
           </div>
         </div>
       </div>
@@ -139,9 +123,9 @@ export default function Navbar({ user }: { user?: User }) {
                 transition={{ duration: 0.3, delay: navItems.length * 0.1 }}
                 className="mt-4"
               >
-                <Button asChild variant="secondary" className="w-full">
-                  <Link href="/booking" onClick={() => setIsOpen(false)}>
-                    Book Now
+                <Button asChild variant="outline" className="w-full">
+                  <Link href="/" onClick={() => setIsOpen(false)}>
+                    Exit Admin
                   </Link>
                 </Button>
               </motion.div>
@@ -149,6 +133,6 @@ export default function Navbar({ user }: { user?: User }) {
           </motion.div>
         )}
       </AnimatePresence>
-    </nav>
+    </header>
   );
 }

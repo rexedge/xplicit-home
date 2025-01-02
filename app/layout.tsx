@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import { NextAuthProvider } from "@/components/providers/next-auth-provider";
 
 const poppins = Poppins({
   weight: ["100", "300", "500", "700", "900"],
@@ -23,7 +24,7 @@ export const metadata: Metadata = {
     "Premium salon services, spa treatments, and lounge experience in one luxurious destination. Xplicit Home - Beauty, Relaxation, and Luxury",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -31,8 +32,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.variable} ${geistMono.variable} antialiased`}>
-        {children}
-        <Toaster richColors />
+        <NextAuthProvider>
+          {children}
+          <Toaster richColors />
+        </NextAuthProvider>
       </body>
     </html>
   );
