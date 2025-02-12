@@ -4,7 +4,7 @@ export const adminNavItem = [
   { name: "Dashboard", href: "/admin", icon: UserIcon },
   { name: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { name: "Bookings", href: "/admin/bookings", icon: Calendar },
-  { name: "Inventory", href: "/admin/inventory", icon: Library },
+  { name: "Inventory", href: "/admin/inventory/lounge", icon: Library },
   { name: "Staff", href: "/admin/staff", icon: UserIcon },
 ];
 

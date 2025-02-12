@@ -2,15 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,10 +14,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { getInventoryItems } from "@/actions/inventory";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import ImageCarousel from "@/components/ImageComponent";
 
 export default function LoungeMenu() {
   const [activeTab, setActiveTab] = useState("drinks");
-  const [menuItems, setMenuItems] = useState<any>({});
+  const [menuItems, setMenuItems] = useState<any>();
   const [cart, setCart] = useState([]);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
@@ -36,11 +37,12 @@ export default function LoungeMenu() {
   });
 
   useEffect(() => {
-    fetch("/api/menu")
-      .then((res) => res.json())
-      .then((data) => setMenuItems(data));
+    async function fetchProducts() {
+      const products = await getInventoryItems("LOUNGE");
+      setMenuItems(products.data);
+    }
+    fetchProducts();
   }, []);
-
   const addToCart = (item: any) => {
     // @ts-expect-error: Object is possibly 'null'.
     setCart([...cart, item]);
@@ -102,24 +104,23 @@ export default function LoungeMenu() {
           Xplicit Home Lounge Menu
         </h1>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="drinks">Drinks</TabsTrigger>
-            <TabsTrigger value="wellness">Wellness</TabsTrigger>
-            <TabsTrigger value="merchandise">Merchandise</TabsTrigger>
-          </TabsList>
-          {Object.entries(menuItems).map(([category, items]) => (
-            <TabsContent key={category} value={category}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* @ts-expect-error: Property 'map' does not exist on type 'never'. */}
-                {items.map((item, index) => (
+        <div className="w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {menuItems
+              ? menuItems.map((item: any, k: number) => (
                   <motion.div
-                    key={index}
+                    key={item.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                    transition={{ duration: 0.5, delay: k * 0.1 }}
                   >
                     <Card>
+                      <ImageCarousel
+                        images={item.images}
+                        alt={item.name}
+                        priority={k === 0}
+                        className="mb-4"
+                      />
                       <CardHeader>
                         <CardTitle>{item.name}</CardTitle>
                         <CardDescription>{item.description}</CardDescription>
@@ -140,11 +141,10 @@ export default function LoungeMenu() {
                       </CardContent>
                     </Card>
                   </motion.div>
-                ))}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+                ))
+              : "loading..."}
+          </div>
+        </div>
 
         {cart.length > 0 && (
           <div className="mt-8">

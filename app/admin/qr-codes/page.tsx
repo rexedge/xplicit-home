@@ -4,6 +4,7 @@ import { useState } from "react";
 import QRCode from "react-qr-code";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import Link from "next/link";
 
 export default function AdminQRCodes() {
   const [tableNumber, setTableNumber] = useState("");
@@ -31,9 +32,12 @@ export default function AdminQRCodes() {
           <h2 className="text-xl font-semibold mb-4">
             QR Code for Table {tableNumber}
           </h2>
-          <div className="inline-block p-4 bg-white rounded-lg shadow-md">
+          <Link
+            href={generateQRCodeUrl(tableNumber)}
+            className="inline-block p-4 bg-white rounded-lg shadow-md"
+          >
             <QRCode value={generateQRCodeUrl(tableNumber)} size={256} />
-          </div>
+          </Link>
           <p className="mt-4">
             Scan this code to access the menu for Table {tableNumber}
           </p>

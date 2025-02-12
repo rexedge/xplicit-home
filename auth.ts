@@ -56,7 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
       // Add maxAge to the token
       const now = Math.floor(Date.now() / 1000);
-      const maxAge = 1800; // 30 minutes
+      const maxAge = 60 * 60 * 2; // 2 Hours
 
       if (!token.exp || token.exp < now) {
         token.exp = now + maxAge;
