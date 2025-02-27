@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -144,7 +143,7 @@ export default function LoungeMenu() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="drinks">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
               {menuItems &&
                 menuItems.map((item, index) => (
                   <motion.div
@@ -171,7 +170,7 @@ export default function LoungeMenu() {
                           <span className="text-lg font-bold">
                             ₦{item.price.toFixed(2)}
                           </span>
-                          <Badge>{item.category}</Badge>
+                          {/* <Badge>{item.category}</Badge> */}
                         </div>
                         <Button
                           onClick={() => addToCart(item)}
