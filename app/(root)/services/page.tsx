@@ -109,7 +109,7 @@ export default function ServicesPage() {
                       <CardContent>
                         <div className="flex justify-between items-center mb-4">
                           <span className="text-2xl font-bold text-purple-700">
-                            ${service.price}
+                            ₦{service.price}
                           </span>
                           <Badge variant="outline">{service.duration}</Badge>
                         </div>

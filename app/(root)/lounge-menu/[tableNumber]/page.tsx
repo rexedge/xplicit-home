@@ -24,11 +24,34 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
+import { getInventoryItems } from "@/actions/inventory";
+import { $Enums } from "@prisma/client";
+import ImageCarousel from "@/components/ImageComponent";
 
 export default function LoungeMenu() {
   const { tableNumber } = useParams();
   const [activeTab, setActiveTab] = useState("drinks");
-  const [menuItems, setMenuItems] = useState<any>({});
+  const [menuItems, setMenuItems] = useState<
+    | ({
+        images: {
+          id: string;
+          createdAt: Date;
+          updatedAt: Date;
+          url: string;
+          inventoryItemId: string;
+        }[];
+      } & {
+        name: string;
+        id: string;
+        description: string;
+        category: $Enums.Category;
+        quantity: number;
+        price: number;
+        createdAt: Date;
+        updatedAt: Date;
+      })[]
+    | undefined
+  >([]);
   const [cart, setCart] = useState([]);
   const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
   const [paymentDetails, setPaymentDetails] = useState({
@@ -38,9 +61,15 @@ export default function LoungeMenu() {
   });
 
   useEffect(() => {
-    fetch("/api/menu")
-      .then((res) => res.json())
-      .then((data) => setMenuItems(data));
+    async function fetchMenu() {
+      const menu = await getInventoryItems("LOUNGE");
+      if (menu.success) {
+        setMenuItems(menu.data);
+      } else {
+        setMenuItems([]);
+      }
+    }
+    fetchMenu();
   }, []);
 
   const addToCart = (item: any) => {
@@ -99,7 +128,7 @@ export default function LoungeMenu() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6"
+        className="container mx-auto bg-white rounded-lg shadow-lg p-6"
       >
         <h1 className="text-3xl font-bold text-center mb-6 text-purple-900">
           Xplicit Home Lounge Menu
@@ -109,16 +138,15 @@ export default function LoungeMenu() {
         </h2>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="drinks">Drinks</TabsTrigger>
-            <TabsTrigger value="wellness">Wellness</TabsTrigger>
-            <TabsTrigger value="merchandise">Merchandise</TabsTrigger>
+          <TabsList className="grid w-full">
+            <TabsTrigger className="w-full" value="drinks">
+              Drinks
+            </TabsTrigger>
           </TabsList>
-          {Object.entries(menuItems).map(([category, items]) => (
-            <TabsContent key={category} value={category}>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* @ts-expect-error: Property 'map' does not exist on type 'never'. */}
-                {items.map((item, index) => (
+          <TabsContent value="drinks">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {menuItems &&
+                menuItems.map((item, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
@@ -126,14 +154,22 @@ export default function LoungeMenu() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     <Card>
+                      <ImageCarousel
+                        images={item.images}
+                        alt={item.name}
+                        priority={index === 0}
+                        className="mb-4"
+                      />
                       <CardHeader>
                         <CardTitle>{item.name}</CardTitle>
-                        <CardDescription>{item.description}</CardDescription>
+                        <CardDescription className="line-clamp-1">
+                          {item.description}
+                        </CardDescription>
                       </CardHeader>
                       <CardContent>
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-lg font-bold">
-                            ${item.price.toFixed(2)}
+                            ₦{item.price.toFixed(2)}
                           </span>
                           <Badge>{item.category}</Badge>
                         </div>
@@ -147,9 +183,8 @@ export default function LoungeMenu() {
                     </Card>
                   </motion.div>
                 ))}
-              </div>
-            </TabsContent>
-          ))}
+            </div>
+          </TabsContent>
         </Tabs>
 
         {cart.length > 0 && (
@@ -164,7 +199,7 @@ export default function LoungeMenu() {
                 <span>{item.name}</span>
                 <div>
                   {/* @ts-expect-error: Object is possibly 'null'. */}
-                  <span className="mr-4">${item.price.toFixed(2)}</span>
+                  <span className="mr-4">₦{item.price.toFixed(2)}</span>
                   <Button
                     variant="outline"
                     size="sm"
@@ -176,7 +211,7 @@ export default function LoungeMenu() {
               </div>
             ))}
             <div className="mt-4 text-right">
-              <p className="text-xl font-bold">Total: ${calculateTotal()}</p>
+              <p className="text-xl font-bold">Total: ₦{calculateTotal()}</p>
             </div>
             <div className="mt-4">
               <Dialog

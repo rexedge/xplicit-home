@@ -66,7 +66,7 @@ export default function AdminDashboard() {
                 },
                 {
                   title: "Revenue",
-                  value: "$45,678",
+                  value: "₦45,678",
                   icon: DollarSign,
                   color: "bg-green-500",
                 },
